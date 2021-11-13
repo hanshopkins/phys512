@@ -123,7 +123,7 @@ if __name__ == "__main__":
     print("The signal to noise ratio of L1 is", signal_height_L1/noise_L1)
     
     #For the combined, I think that just means adding them?
-    print("The combined signal to noise ratio for event 1 is", (signal_height_H1 + signal_height_L1)/(noise_H1 + noise_L1))
+    print("The combined signal to noise ratio for event 1 is", np.sqrt((signal_height_H1/noise_H1)**2 + (signal_height_L1/noise_L1)**2))
     
     noise_H2 = np.std(result_H2[n1:n2])
     signal_height_H2 = np.max(np.abs(result_H2))
@@ -133,7 +133,7 @@ if __name__ == "__main__":
     signal_height_L2 = np.max(np.abs(result_L2))
     print("The signal to noise ratio of L2 is", signal_height_L2/noise_L2)
     
-    print("The combined signal to noise ratio for event 2 is", (signal_height_H2 + signal_height_L2)/(noise_H2 + noise_L2))
+    print("The combined signal to noise ratio for event 2 is", np.sqrt((signal_height_H2/noise_H2)**2 + (signal_height_L2/noise_L2)**2))
     
     noise_H3 = np.std(result_H3[n1:n2])
     signal_height_H3 = np.max(np.abs(result_H3))
@@ -143,7 +143,7 @@ if __name__ == "__main__":
     signal_height_L3 = np.max(np.abs(result_L3))
     print("The signal to noise ratio of L3 is", signal_height_L3/noise_L3)
     
-    print("The combined signal to noise ratio for event 3 is", (signal_height_H3 + signal_height_L3)/(noise_H3 + noise_L3))
+    print("The combined signal to noise ratio for event 3 is", np.sqrt((signal_height_H3/noise_H3)**2 + (signal_height_L3/noise_L3)**2))
     
     noise_H4 = np.std(result_H4[n1:n2])
     signal_height_H4 = np.max(np.abs(result_H4))
@@ -153,14 +153,48 @@ if __name__ == "__main__":
     signal_height_L4 = np.max(np.abs(result_L4))
     print("The signal to noise ratio of L4 is", signal_height_L4/noise_L4)
     
-    print("The combined signal to noise ratio for event 4 is", (signal_height_H4 + signal_height_L4)/(noise_H4 + noise_L4))
+    print("The combined signal to noise ratio for event 4 is", np.sqrt((signal_height_H4/noise_H4)**2 + (signal_height_L4/noise_L4)**2))
     
+    
+    print("\n")
     ## And here's part D:
-    print("H1 Analytic SNR:", signal_height_H1/np.sqrt(th1@th1/np.sum(noise_model_H1)))
-    print("L1 Analytic SNR:", signal_height_L1/np.sqrt(tl1@tl1/np.sum(noise_model_L1)))
-    print("H2 Analytic SNR:", signal_height_H2/np.sqrt(th2@th2/np.sum(noise_model_H2)))
-    print("L2 Analytic SNR:", signal_height_L2/np.sqrt(tl2@tl2/np.sum(noise_model_L2)))
-    print("H3 Analytic SNR:", signal_height_H3/np.sqrt(th3@th3/np.sum(noise_model_H3)))
-    print("L3 Analytic SNR:", signal_height_L3/np.sqrt(tl3@tl3/np.sum(noise_model_L3)))
-    print("H4 Analytic SNR:", signal_height_H4/np.sqrt(th4@th4/np.sum(noise_model_H4)))
-    print("L4 Analytic SNR:", signal_height_L4/np.sqrt(tl4@tl4/np.sum(noise_model_L4)))
+    th1_fft = np.fft.rfft(th1*window_values)
+    analytic_snrsq_h1 = np.real(np.sum(th1_fft*np.conj(th1_fft)/noise_model_H1))/N
+    print("H1 Analytic SNR:", np.sqrt(analytic_snrsq_h1))
+    tl1_fft = np.fft.rfft(tl1*window_values)
+    analytic_snrsq_l1 = np.real(np.sum(tl1_fft*np.conj(tl1_fft)/noise_model_L1))/N
+    print("L1 Analytic SNR:", np.sqrt(analytic_snrsq_l1))
+    th2_fft = np.fft.rfft(th2*window_values)
+    analytic_snrsq_H2 = np.real(np.sum(th2_fft*np.conj(th2_fft)/noise_model_H2))/N
+    print("H2 Analytic SNR:", np.sqrt(analytic_snrsq_H2))
+    tl2_fft = np.fft.rfft(tl2*window_values)
+    analytic_snrsq_L2 = np.real(np.sum(tl2_fft*np.conj(tl2_fft)/noise_model_L2))/N
+    print("L2 Analytic SNR:", np.sqrt(analytic_snrsq_L2))
+    th3_fft = np.fft.rfft(th3*window_values)
+    analytic_snrsq_H3 = np.real(np.sum(th3_fft*np.conj(th3_fft)/noise_model_H3))/N
+    print("H3 Analytic SNR:", np.sqrt(analytic_snrsq_H3))
+    tl3_fft = np.fft.rfft(tl3*window_values)
+    analytic_snrsq_L3 = np.real(np.sum(tl3_fft*np.conj(tl3_fft)/noise_model_L3))/N
+    print("L3 Analytic SNR:", np.sqrt(analytic_snrsq_L3))
+    th4_fft = np.fft.rfft(th4*window_values)
+    analytic_snrsq_H4 = np.real(np.sum(th4_fft*np.conj(th4_fft)/noise_model_H4))/N
+    print("H4 Analytic SNR:", np.sqrt(analytic_snrsq_H4))
+    tl4_fft = np.fft.rfft(tl4*window_values)
+    analytic_snrsq_L4 = np.real(np.sum(tl4_fft*np.conj(tl4_fft)/noise_model_L4))/N
+    print("L4 Analytic SNR:", np.sqrt(analytic_snrsq_L4))
+    
+    print("\n")
+    ##here's part e
+    def part_e_result_index(template_fft, noise_model, analytic_snrsq):
+        cumsum = np.cumsum(np.real(template_fft*np.conj(template_fft)/noise_model/N))
+        for i in range(len(cumsum)):
+            if cumsum[i] > analytic_snrsq/2:
+                return i
+    print("Part e H1:", part_e_result_index(th1_fft, noise_model_H1, analytic_snrsq_h1))
+    print("Part e L1:", part_e_result_index(tl1_fft, noise_model_L1, analytic_snrsq_l1))
+    print("Part e H2:", part_e_result_index(th2_fft, noise_model_H2, analytic_snrsq_H2))
+    print("Part e L2:", part_e_result_index(tl2_fft, noise_model_L2, analytic_snrsq_L2))
+    print("Part e H3:", part_e_result_index(th3_fft, noise_model_H3, analytic_snrsq_H3))
+    print("Part e L3:", part_e_result_index(tl3_fft, noise_model_L3, analytic_snrsq_L3))
+    print("Part e H4:", part_e_result_index(th4_fft, noise_model_H4, analytic_snrsq_H4))
+    print("Part e L4:", part_e_result_index(tl4_fft, noise_model_L4, analytic_snrsq_L4))
